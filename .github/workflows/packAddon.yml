@@ -1,25 +1,35 @@
-name: .NET
+name: "Package Addon"
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+    tags:
+    - 'v*'
+env:
+  PROJECT_PATH: 'SAPB1-CICD/SAPB1-CICD.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  deploy:
+    name: 'Deploy'
+    runs-on: 'windows-latest'
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+
+    - name: 'Install dotnet'
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+        dotnet-version: '5.0.x'
+        
+    - name: 'Restore packages'
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: 'Build project'
+      run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+
+    - name: 'Get Version'
+      id: version
+      uses: battila7/get-version-action@v2
+    
+    - name: 'Pack project'
+      run: AddOnRegDataGen/ExtensionPackage.exe /v:"0.06" /86:"C:\Users\blatsabidze\source\repos\DownPaymentCorrection\DownPaymentCorrection\bin\Debug\DownPaymentCorrection.exe" /64:"C:\Users\blatsabidze\source\repos\DownPaymentCorrection\DownPaymentCorrection\bin\Debug\DownPaymentCorrection.exe" /p:"C:\Users\blatsabidze\source\repos\DownPaymentCorrection\Installs\DownPaymentCorrection.zip" /s:"C:\Users\blatsabidze\source\repos\DownPaymentCorrection\DownPaymentCorrection.ard" /ex:".pdb"
