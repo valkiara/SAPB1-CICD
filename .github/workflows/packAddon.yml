@@ -1,25 +1,39 @@
-name: .NET
+name: "Package addon"
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+    - 'v*'
+
+env:
+  PROJECT_PATH: 'SAPB1-CICD/SAPB1-CICD.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  deploy:
+    name: 'Package addon'
+    runs-on: 'windows-latest'
     steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+
+  steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+     
+    - name: Navigate to Workspace
+      run: cd $GITHUB_WORKSPACE
+
+    - name: Create Build Directory
+      run: mkdir _build
+      
+    - name: Restore Packages
+      run: nuget restore SAPB1-CICD.sln
+
+    - name: Build Solution
+      run: |
+        msbuild.exe SAPB1-CICD.sln /nologo /nr:false /p:platform="Any CPU" /p:configuration="Release"
+        
+  
