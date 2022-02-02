@@ -38,5 +38,5 @@ jobs:
         msbuild.exe SAPB1-CICD.sln /nologo /nr:false /p:platform="Any CPU" /p:configuration="Release"
     
     - name: Pakcage Addon
-      run: ExtensionPackage/ExtensionPackage.exe /v:"0.06" /86:"${{ env.PROJECT_PATH }}" /64:"${{ env.PROJECT_PATH }}" /p:"${{ env.OUTPUT_DIR }}\${{ env.PROJECT_NAME }}.zip" /s:"${{SOLUTION_DIR}}\SAPB1-CICD.ard" /ex:".pdb"
+      run: ExtensionPackage/ExtensionPackage.exe /v:"0.06" /86:"${{ env.PROJECT_PATH }}" /64:"${{ env.PROJECT_PATH }}" /p:"${{ env.OUTPUT_DIR }}\${{ env.PROJECT_NAME }}.zip" /s:"${{ env.SOLUTION_DIR }}\SAPB1-CICD.ard" /ex:".pdb"
   
